@@ -1,0 +1,13 @@
+*.sqlite3
+.idea
+local_settings.py
+.env
+*.log
+media
+requirements/local.txt
+__pycache__
+*.env.*
+build
+dist
+*.py[cod]
+*.egg-info
