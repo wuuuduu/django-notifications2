@@ -1,12 +1,11 @@
 import logging
-from _socket import gaierror
 from abc import ABC
 from smtplib import SMTPException
-from time import sleep
 from typing import List, Union, Type
 from django.core.mail import EmailMultiAlternatives
 from django.conf import settings
 from django.db import transaction, OperationalError
+from django.utils import timezone
 
 from django_notifications.models import NotificationQueue, NotificationQueueQuerySet
 
@@ -18,9 +17,12 @@ class BaseNotificationQueueManagement:
     backend: str
 
     def get_notifications(self) -> Union[NotificationQueueQuerySet, List[NotificationQueue]]:
-        return self.KLASS.objects.select_for_update(nowait=True).filter(backend=self.backend)
+        return self.KLASS.objects.select_for_update(nowait=True).filter(
+            backend=self.backend,
+            send_after__lte=timezone.now()
+        )
 
-    def delete_notification(self, notification: NotificationQueue) -> bool:
+    def delete_notification(self, notification: NotificationQueue):
         return notification.delete()
 
     def send_notification(self, notification: NotificationQueue):
