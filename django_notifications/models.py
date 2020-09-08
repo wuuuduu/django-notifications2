@@ -1,4 +1,5 @@
 from django.db import models
+from django.utils import timezone
 from django.utils.translation import gettext_lazy as _
 
 
@@ -24,6 +25,7 @@ class NotificationQueue(models.Model):
     data = models.JSONField()
     queue = models.PositiveSmallIntegerField(choices=QUEUES, default=STANDARD_QUEUE, null=False)
     created = models.DateTimeField(auto_now_add=True)
+    send_after = models.DateTimeField(default=timezone.now, null=False, blank=False)
 
     objects = NotificationQueueQuerySet().as_manager()
 
